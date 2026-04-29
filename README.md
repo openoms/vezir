@@ -4,7 +4,7 @@ Self-hosted scribe service for team-scale meeting capture. Vezir wraps
 [meetscribe](https://github.com/pretyflaco/meetscribe) and turns it into a
 multi-user, Tailscale-hosted service: a designated scribe records a meeting
 on their laptop, the audio uploads to a central GPU-equipped box, and the
-team gets back a diarized transcript, AI summary, and PDF — with speaker
+team gets back a diarized transcript, AI summary, and PDF - with speaker
 labels resolved to GitHub handles via a shared web UI.
 
 ## Status
@@ -157,8 +157,14 @@ URL flows through `/login?token=...` so the browser is signed in via
 HttpOnly cookie before it lands on the session page; subsequent access
 from the same browser does not require re-passing the token.
 
+Client uploads use a resumable chunked protocol with retry. The CLI prints
+upload progress while sending the file, and if a chunk fails the client asks
+the server how many bytes were already stored before retrying.
+
 Live client recordings remain on the scribe machine under
-`~/meet-recordings/` by default. `vezir status` is a server-side/local
+`~/meet-recordings/` by default. If both `.ogg` and `.wav` exist for the same
+capture, vezir prefers uploading `.ogg` because it is materially smaller.
+`vezir status` is a server-side/local
 diagnostic command; on a thin client it inspects that machine's local
 `~/vezir-data` and does not query the remote server.
 
